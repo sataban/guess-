@@ -142,7 +142,7 @@ if(TU){
   DB.cur=nm;updateRanks();save();
   $('sw').hidden=true;
 }
-const API='https://sabata.eu.pythonanywhere.com'; // آدرس https سرور
+const API='https://sataba.eu.pythonanywhere.com'; // آدرس https سرور
 const SERVER=!!(TU&&tg.initData&&!API.includes('YOUR-SERVER'));
 async function api(path,body){
   const r=await fetch(API+path,{method:body?'POST':'GET',headers:{'Authorization':'tma '+tg.initData,...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined});
