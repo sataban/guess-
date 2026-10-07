@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>حدس کشور</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#10222a;--card:#1a323c;--ink:#e8f1f2;--dim:#8fa8ae;--acc:#5ad1c0;--bad:#e5646e;--ok:#4caf6a}
+@media (prefers-color-scheme:light){:root{--bg:#eaf2f3;--card:#fff;--ink:#14262e;--dim:#587178;--acc:#0f8f82}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Vazirmatn,Tahoma,sans-serif;display:flex;justify-content:center}
+main{width:100%;max-width:520px;padding:20px 16px 40px}
+h1{font-size:1.5rem;margin:0 0 4px}
+.sub{color:var(--dim);margin:0 0 16px;font-size:.9rem}
+.bar{display:flex;justify-content:space-between;color:var(--dim);font-size:.9rem;margin-bottom:10px}
+.row{display:flex;gap:8px}
+[hidden]{display:none!important}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.tro{width:44px;height:44px;border-radius:50%;padding:0;font-size:1.3rem;flex:none}
+.ov{position:fixed;inset:0;background:var(--bg);overflow-y:auto;z-index:10;display:flex;justify-content:center}
+.ov>div{width:100%;max-width:520px;padding:20px 16px 40px}
+.md{position:fixed;inset:0;background:#000a;z-index:20;display:flex;align-items:center;justify-content:center;padding:16px}
+.md>div{background:var(--card);border-radius:14px;padding:20px;width:100%;max-width:360px}
+table{width:100%;border-collapse:collapse}
+td,th{padding:8px 4px;text-align:right;border-bottom:1px solid #8fa8ae33;font-weight:400}
+th{color:var(--dim);font-size:.85rem}
+tr.me{color:var(--acc);font-weight:700}
+h2{font-size:1.05rem;margin:20px 0 6px}
+.box{flex:1;min-width:0;position:relative}
+.sug{position:absolute;top:calc(100% + 4px);inset-inline:0;max-height:222px;overflow-y:auto;background:var(--card);border:1px solid var(--dim);border-radius:10px;z-index:5;overscroll-behavior:contain}
+.sug div{height:44px;padding:0 12px;display:flex;align-items:center;gap:8px;cursor:pointer}
+.sug div:hover{background:#5ad1c033}
+input{width:100%;padding:12px;border-radius:10px;border:1px solid var(--dim);background:var(--card);color:var(--ink);font:inherit}
+button{font:inherit;border:0;border-radius:10px;padding:12px 16px;cursor:pointer;color:#fff;background:var(--acc);font-weight:700}
+button.alt{background:var(--card);color:var(--ink);border:1px solid var(--dim)}
+button:disabled,input:disabled{opacity:.5;cursor:default}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.msg{min-height:1.6em;margin:8px 0;color:var(--bad);font-size:.9rem}
+.list{background:var(--card);border-radius:14px;padding:6px 14px;margin-top:6px;direction:rtl}
+.g{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #8fa8ae33}
+.g:last-child{border:0}
+.g .km{width:78px;direction:ltr;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.g .nm{flex:1}
+.g.t{color:var(--ok)}
+.g.new{animation:pop .4s}
+@keyframes pop{from{background:#5ad1c044}}
+@media (prefers-reduced-motion:reduce){.g.new{animation:none}}
+.end{margin:14px 0;padding:14px;border-radius:14px;background:var(--card);text-align:center}
+.end b{font-size:1.15rem}
+.acts{display:flex;gap:8px;margin-top:14px}
+.acts button{flex:1}
+details{margin-top:18px;color:var(--dim);font-size:.9rem}
+summary{cursor:pointer;color:var(--ink)}
+</style>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+<main>
+<header>
+<div><h1>🌍 حدس کشور</h1>
+<p class="sub">کشور مخفی را پیدا کن؛ بعد از هر حدس فاصله و جهت تا جواب را می‌بینی.</p></div>
+<button class="alt tro" id="tro" aria-label="رتبه‌بندی">🏆</button>
+</header>
+<div class="bar"><span id="cnt">۰ از ۱۵ حدس</span><span id="st"></span></div>
+<div class="row">
+  <div class="box"><input id="in" placeholder="نام کشور (مثلاً ایران)" autocomplete="off" enterkeyhint="go"><div class="sug" id="sug" hidden></div></div>
+  <button id="go">حدس بزن</button>
+</div>
+<div class="msg" id="msg" role="status"></div>
+<div id="end"></div>
+<div class="list" id="list" hidden></div>
+<div class="acts">
+  <button class="alt" id="hint">💡 راهنما</button>
+  <button class="alt" id="again">⚔️ دوباره</button>
+</div>
+<details>
+<summary>📖 راهنمای بازی</summary>
+<p>هر حدس باید نام یک کشور معتبر باشد. هرچه فاصله کمتر باشد حدس بهتر است و نزدیک‌ترین حدس بالای لیست قرار می‌گیرد. فاصله‌ها و جهت‌ها بر اساس مختصات مرکز کشورها محاسبه می‌شوند.</p>
+<p>با زدن راهنما یک کشور نزدیک‌تر به فهرست اضافه می‌شود. ۳ راهنمای اول امن هستند؛ با راهنمای چهارم، حتی اگر جواب را پیدا کنی بازی باخت حساب می‌شود. فقط ۱۵ حدس داری.</p>
+</details>
+</main>
+<div class="ov" id="rk" hidden><div>
+<div class="bar" style="align-items:center"><h1 style="margin:0">🏆 رتبه‌بندی</h1><button class="alt" id="rkx" aria-label="بستن">✕</button></div>
+<p class="sub" id="rkwho"></p>
+<div class="list" id="rkl"></div>
+<h2>تاریخچه بازی‌های تو</h2>
+<div class="list" id="rkh"></div>
+<div class="acts"><button class="alt" id="sw">تغییر کاربر</button></div>
+</div></div>
+<div class="md" id="md" hidden><div>
+<h2 style="margin-top:0">یک نام کاربری انتخاب کن</h2>
+<p class="sub">۲ تا ۱۶ حرف. با این نام در رتبه‌بندی ثبت می‌شوی.</p>
+<input id="nm" maxlength="16" autocomplete="off" placeholder="نام کاربری">
+<div class="msg" id="nmm"></div>
+<div class="acts" style="margin-top:0"><button id="nmok">شروع بازی</button><button class="alt" id="nmc">انصراف</button></div>
+</div></div>
+<script>
+const RAW=`IR,ایران,32,53;IQ,عراق,33,44;SY,سوریه,35,38;TR,ترکیه,39,35;IL,اسرائیل,31.5,35;JO,اردن,31,36;LB,لبنان,33.9,35.9;SA,عربستان سعودی,24,45;AE,امارات,24,54;QA,قطر,25.3,51.2;KW,کویت,29.3,47.5;BH,بحرین,26,50.5;OM,عمان,21,57;YE,یمن,15.5,48;AF,افغانستان,33.9,67.7;PK,پاکستان,30,70;IN,هند,22,79;BD,بنگلادش,24,90;LK,سریلانکا,7.9,80.7;NP,نپال,28.4,84;CN,چین,35,103;JP,ژاپن,36,138;KR,کره جنوبی,36.5,128;KP,کره شمالی,40,127;MN,مغولستان,46.9,103.8;KZ,قزاقستان,48,68;UZ,ازبکستان,41.4,64.6;TM,ترکمنستان,39,59.5;TJ,تاجیکستان,38.9,71;KG,قرقیزستان,41.2,74.8;AZ,آذربایجان,40.1,47.6;AM,ارمنستان,40.1,45;GE,گرجستان,42.3,43.4;RU,روسیه,60,90;UA,اوکراین,49,32;BY,بلاروس,53.7,28;PL,لهستان,52,19;DE,آلمان,51,10;FR,فرانسه,46.6,2.2;GB,بریتانیا,54,-2;IE,ایرلند,53.4,-8;ES,اسپانیا,40,-4;PT,پرتغال,39.5,-8;IT,ایتالیا,42.8,12.5;GR,یونان,39,22;NL,هلند,52.2,5.3;BE,بلژیک,50.6,4.7;CH,سوئیس,46.8,8.2;AT,اتریش,47.5,14.5;SE,سوئد,62,15;NO,نروژ,61,9;FI,فنلاند,64,26;DK,دانمارک,56,10;IS,ایسلند,65,-18;CZ,چک,49.8,15.5;SK,اسلواکی,48.7,19.7;HU,مجارستان,47,19.5;RO,رومانی,46,25;BG,بلغارستان,42.7,25.5;RS,صربستان,44,21;HR,کرواسی,45.1,15.2;BA,بوسنی و هرزگوین,44,17.8;AL,آلبانی,41,20;MK,مقدونیه شمالی,41.6,21.7;SI,اسلوونی,46.1,14.8;LT,لیتوانی,55.2,23.9;LV,لتونی,56.9,24.6;EE,استونی,58.6,25;MD,مولداوی,47.2,28.5;CY,قبرس,35,33;MT,مالت,35.9,14.4;EG,مصر,26.8,30.8;LY,لیبی,27,17;TN,تونس,34,9;DZ,الجزایر,28,3;MA,مراکش,31.8,-7;SD,سودان,15.5,30;SS,سودان جنوبی,7,30;ET,اتیوپی,9,40;ER,اریتره,15.2,39.8;SO,سومالی,5,46;KE,کنیا,0.2,37.9;UG,اوگاندا,1.4,32.3;TZ,تانزانیا,-6.4,34.9;RW,رواندا,-2,29.9;CD,کنگو,-2.9,23.7;NG,نیجریه,9.1,8.7;GH,غنا,7.9,-1;SN,سنگال,14.5,-14.5;ML,مالی,17.6,-4;NE,نیجر,17.6,8;TD,چاد,15.5,18.7;CM,کامرون,5.7,12.7;CI,ساحل عاج,7.5,-5.5;AO,آنگولا,-11.2,17.9;ZM,زامبیا,-13.1,27.8;ZW,زیمبابوه,-19,29.2;MZ,موزامبیک,-18.7,35.5;ZA,آفریقای جنوبی,-29,24;NA,نامیبیا,-22.6,17;BW,بوتسوانا,-22.3,24.7;MG,ماداگاسکار,-19,47;US,آمریکا,39.8,-98.6;CA,کانادا,56,-106;MX,مکزیک,23.6,-102.5;CU,کوبا,21.5,-80;DO,جمهوری دومینیکن,18.7,-70.2;JM,جامائیکا,18.1,-77.3;GT,گواتمالا,15.8,-90.2;CR,کاستاریکا,9.7,-83.8;PA,پاناما,8.5,-80;CO,کلمبیا,4.6,-74;VE,ونزوئلا,6.4,-66.6;EC,اکوادور,-1.8,-78;PE,پرو,-9.2,-75;BO,بولیوی,-16.3,-63.6;BR,برزیل,-14,-51;PY,پاراگوئه,-23.4,-58.4;UY,اروگوئه,-32.5,-55.8;AR,آرژانتین,-38.4,-63.6;CL,شیلی,-35.7,-71.5;AU,استرالیا,-25,134;NZ,نیوزیلند,-41,174;ID,اندونزی,-2.5,118;MY,مالزی,4.2,102;SG,سنگاپور,1.35,103.8;TH,تایلند,15.9,101;VN,ویتنام,14,108;PH,فیلیپین,12.9,122;MM,میانمار,21.9,96;KH,کامبوج,12.6,105;LA,لائوس,18.2,103.9;PG,پاپوا گینه نو,-6.3,143.9`;
+const norm=s=>s.replace(/ي/g,'ی').replace(/ك/g,'ک').replace(/[\s\u200c]/g,'').toLowerCase();
+const C=RAW.split(';').map(s=>{const[c,n,a,o]=s.split(',');return{c,n,a:+a,o:+o,k:norm(n)}});
+const flag=c=>String.fromCodePoint(...[...c].map(x=>127397+x.charCodeAt(0)));
+const R=Math.PI/180;
+const dist=(a,b)=>{const x=Math.sin((b.a-a.a)*R/2)**2+Math.cos(a.a*R)*Math.cos(b.a*R)*Math.sin((b.o-a.o)*R/2)**2;return 12742*Math.asin(Math.sqrt(x))};
+const ARR=['⬆️','↗️','➡️','↘️','⬇️','↙️','⬅️','↖️'];
+const dir=(a,b)=>{const y=Math.sin((b.o-a.o)*R)*Math.cos(b.a*R),x=Math.cos(a.a*R)*Math.sin(b.a*R)-Math.sin(a.a*R)*Math.cos(b.a*R)*Math.cos((b.o-a.o)*R);return ARR[Math.round(((Math.atan2(y,x)/R+360)%360)/45)%8]};
+const $=id=>document.getElementById(id);
+const MAX=15,KEY='gc2';
+let DB;
+try{DB=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!DB||!DB.players)DB={cur:null,players:{}};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}};
+const me=()=>DB.players[DB.cur];
+const esc=s=>s.replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
+const ranked=()=>Object.entries(DB.players).map(([n,p])=>({n,...p})).sort((a,b)=>b.pts-a.pts||b.wins-a.wins||a.played-b.played||a.n.localeCompare(b.n,'fa'));
+function updateRanks(){
+  ranked().forEach((p,i)=>{const q=DB.players[p.n],k=i+1;
+    if(q.rank!==k){q.prev=q.rank||null;q.rank=k;q.rh=(q.rh||[]).concat({t:Date.now(),r:k}).slice(-50)}});
+}
+function recordLocal(won,n){
+  const p=me(),clean=won&&!lost;
+  const pts=clean?Math.max(30,100-(n-1)*5)-Math.min(hints,3)*5:won?10:0;
+  p.pts+=pts;p.played++;if(clean)p.wins++;
+  updateRanks();
+  p.hist=(p.hist||[]).concat({t:Date.now(),c:T.n,w:clean,n,h:hints,pts,r:p.rank}).slice(-50);
+  save();return{pts,rank:p.rank};
+}
+function ask(){$('md').hidden=false;$('nmc').hidden=!DB.cur;$('nm').value='';$('nmm').textContent='';$('nm').focus()}
+function login(){
+  const v=$('nm').value.trim().replace(/\s+/g,' ');
+  if(v.length<2||v.length>16){$('nmm').textContent='نام کاربری باید ۲ تا ۱۶ حرف باشد.';return}
+  if(!DB.players[v]){DB.players[v]={pts:0,wins:0,played:0,hist:[],rh:[]};updateRanks()}
+  DB.cur=v;save();$('md').hidden=true;start();
+}
+const tg=window.Telegram&&Telegram.WebApp,TU=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user;
+if(TU){
+  tg.ready();tg.expand();
+  const t=tg.themeParams||{},st=document.documentElement.style;
+  [['bg_color','--bg'],['secondary_bg_color','--card'],['text_color','--ink'],['hint_color','--dim'],['button_color','--acc']].forEach(([k,v])=>{if(t[k])st.setProperty(v,t[k])});
+  const nm=(TU.username||TU.first_name||'player').slice(0,16);
+  if(!DB.players[nm])DB.players[nm]={pts:0,wins:0,played:0,hist:[],rh:[]};
+  DB.cur=nm;updateRanks();save();
+  $('sw').hidden=true;
+}
+const API='https://sabata.eu.pythonanywhere.com'; // آدرس https سرور
+const SERVER=!!(TU&&tg.initData&&!API.includes('YOUR-SERVER'));
+async function api(path,body){
+  const r=await fetch(API+path,{method:body?'POST':'GET',headers:{'Authorization':'tma '+tg.initData,...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined});
+  if(!r.ok)throw new Error(r.status);
+  return r.json();
+}
+const okBox=m=>tg&&TU&&tg.showConfirm?new Promise(res=>tg.showConfirm(m,res)):Promise.resolve(confirm(m));
+const medal=k=>['🥇','🥈','🥉'][k-1]||fa(k);
+const day=t=>new Date(t).toLocaleDateString('fa');
+async function showRank(){
+  let rows,h,who;
+  if(SERVER){
+    $('rkwho').textContent='در حال بارگذاری…';
+    try{const d=await api('/api/leaderboard');rows=d.top;h=d.hist;who=d.me}
+    catch(e){$('rkwho').textContent='اتصال به سرور برقرار نشد.';$('rkl').innerHTML='';$('rkh').innerHTML='';return}
+  }else{
+    const p=DB.cur&&me();rows=ranked();who=DB.cur;h=p?(p.hist||[]).slice().reverse().slice(0,15):[];
+  }
+  $('rkwho').textContent=who?`کاربر فعلی: ${who}`:'هنوز بازیکنی ثبت نشده است.';
+  $('rkl').innerHTML=rows.length?`<table><tr><th>رتبه</th><th>بازیکن</th><th>امتیاز</th><th>برد / بازی</th></tr>`+rows.map(r=>{
+    const tr=r.prev&&r.prev!==r.rank?(r.rank<r.prev?' 🔺':' 🔻'):'';
+    return `<tr class="${(SERVER?r.me:r.n===who)?'me':''}"><td>${medal(r.rank)}${tr}</td><td>${esc(r.n)}</td><td>${fa(r.pts)}</td><td>${fa(r.wins)} / ${fa(r.played)}</td></tr>`}).join('')+'</table>':'';
+  $('rkh').innerHTML=h.length?h.map(g=>`<div class="g"><span>${g.w?'✅':'❌'}</span><span class="nm">${esc(g.c)}<br><small style="color:var(--dim)">${day(g.t)}</small></span><span>+${fa(g.pts)}</span><span>رتبه ${fa(g.r)}</span></div>`).join(''):'<div class="g">هنوز بازی‌ای ثبت نشده.</div>';
+}
+let T,guesses=[],hints=0,over=true,lost=false,GID,busy=false,RES;
+const SORTED=C.slice().sort((a,b)=>a.n.localeCompare(b.n,'fa'));
+function suggest(){
+  const k=norm($('in').value),box=$('sug');
+  const m=k?SORTED.filter(c=>c.k.includes(k)):[];
+  box.hidden=!m.length;
+  box.scrollTop=0;
+  box.innerHTML=m.map(c=>`<div data-n="${c.n}">${flag(c.c)} ${c.n}</div>`).join('');
+}
+$('sug').onmousedown=e=>{
+  e.preventDefault();
+  const d=e.target.closest('div[data-n]');
+  if(d){$('in').value=d.dataset.n;$('sug').hidden=true;$('in').focus()}
+};
+$('in').oninput=suggest;
+$('in').onblur=()=>{$('sug').hidden=true};
+const fa=n=>n.toLocaleString('fa');
+async function start(){
+  if(!DB.cur||!me()){ask();return}
+  T=SERVER?null:C[Math.floor(Math.random()*C.length)];
+  guesses=[];hints=0;over=false;lost=false;
+  $('in').disabled=$('go').disabled=$('hint').disabled=false;
+  $('in').value='';$('msg').textContent='';$('end').innerHTML='';
+  render();
+  if(SERVER){busy=true;try{GID=(await api('/api/start',{})).gid}catch(e){$('msg').textContent='اتصال به سرور برقرار نشد.';over=true}busy=false}
+  $('in').focus();
+}
+function render(newC){
+  const rows=guesses.slice().sort((a,b)=>a.d-b.d);
+  $('list').hidden=!rows.length;
+  $('list').innerHTML=rows.map(g=>`<div class="g${g.w?' t':''}${g.c.c===newC?' new':''}">
+    <span class="km">${Math.round(g.d).toLocaleString('en')} km</span>
+    <span>${flag(g.c.c)}</span><span class="nm">${g.c.n}${g.h?' 💡':''}</span>
+    <span>${g.w?'🎯':g.dir}</span></div>`).join('');
+  const n=guesses.filter(g=>!g.h).length;
+  $('cnt').textContent=`${fa(n)} از ${fa(MAX)} حدس`;
+  $('st').textContent=(DB.cur?'👤 '+DB.cur:'')+(hints?` · 💡 ${fa(hints)} راهنما`:'');
+  $('hint').textContent=`💡 راهنما${hints>=3&&!over?' (باخت می‌شود)':''}`;
+}
+function finish(won){
+  over=true;$('in').disabled=$('go').disabled=$('hint').disabled=true;
+  const n=guesses.filter(g=>!g.h).length;
+  let t;
+  if(won&&!lost)t=`🎉 <b>در ${fa(n)} حدس حل شد!</b><br>${flag(T.c)} ${T.n}`;
+  else if(won)t=`🏳️ <b>پیدا شد، ولی با راهنمای چهارم باخت حساب می‌شود.</b><br>${flag(T.c)} ${T.n}`;
+  else t=`😔 <b>حدس‌هایت تمام شد.</b><br>جواب: ${flag(T.c)} ${T.n}`;
+  $('end').innerHTML=`<div class="end">${t}</div>`;
+  (SERVER?Promise.resolve(RES):recordLocal(won,n)).then(rec=>{
+    const f=$('end').firstChild;if(!f)return;
+    f.insertAdjacentHTML('beforeend',rec?`<br><small>${rec.pts>0?'+':''}${fa(rec.pts)} امتیاز · رتبه ${fa(rec.rank)}</small>`:'<br><small>ثبت نتیجه در سرور ناموفق بود.</small>');
+  });
+}
+async function guess(){
+  if(over||busy)return;
+  const k=norm($('in').value);if(!k)return;
+  const c=C.find(x=>x.k===k);
+  if(!c){$('msg').textContent='این کشور در فهرست نیست. از پیشنهادها انتخاب کن.';return}
+  if(guesses.some(g=>g.c.c===c.c)){$('msg').textContent='این کشور را قبلاً حدس زده‌ای.';return}
+  $('msg').textContent='';$('in').value='';$('sug').hidden=true;
+  if(SERVER){
+    busy=true;
+    try{
+      const d=await api('/api/guess',{gid:GID,code:c.c});
+      guesses.push({c,d:d.d,dir:d.dir,w:d.win});render(c.c);
+      if(d.over){T=d.win?c:C.find(x=>x.c===d.answer);RES=d.result;finish(d.win)}
+    }catch(e){$('msg').textContent='خطا در ارتباط با سرور.'}
+    busy=false;return;
+  }
+  guesses.push({c,d:dist(c,T),w:c.c===T.c,dir:dir(c,T)});
+  render(c.c);
+  if(c.c===T.c)return finish(true);
+  if(guesses.filter(g=>!g.h).length>=MAX)finish(false);
+}
+async function hint(){
+  if(over||busy)return;
+  if(hints===3&&!(await okBox('با راهنمای چهارم، حتی اگر جواب را پیدا کنی بازی باخت حساب می‌شود. ادامه می‌دهی؟')))return;
+  if(SERVER){
+    busy=true;
+    try{
+      const d=await api('/api/hint',{gid:GID});
+      if(d.none)$('msg').textContent='کشور نزدیک‌تری برای راهنمایی نیست.';
+      else{const c=C.find(x=>x.c===d.code);hints++;if(hints>3)lost=true;guesses.push({c,d:d.d,dir:d.dir,h:true});render(c.c)}
+    }catch(e){$('msg').textContent='خطا در ارتباط با سرور.'}
+    busy=false;return;
+  }
+  const best=Math.min(Infinity,...guesses.map(g=>g.d));
+  const pool=C.filter(c=>c.c!==T.c&&!guesses.some(g=>g.c.c===c.c)&&dist(c,T)<best);
+  if(!pool.length){$('msg').textContent='کشور نزدیک‌تری برای راهنمایی نیست.';return}
+  const c=pool[Math.floor(Math.random()*pool.length)];
+  hints++;if(hints>3)lost=true;
+  guesses.push({c,d:dist(c,T),dir:dir(c,T),h:true});
+  render(c.c);
+}
+$('tro').onclick=()=>{showRank();$('rk').hidden=false};
+$('rkx').onclick=()=>{$('rk').hidden=true};
+$('sw').onclick=()=>{$('rk').hidden=true;ask()};
+$('nmok').onclick=login;
+$('nmc').onclick=()=>{$('md').hidden=true};
+$('nm').onkeydown=e=>{if(e.key==='Enter')login()};
+$('go').onclick=guess;
+$('in').onkeydown=e=>{if(e.key==='Enter')guess()};
+$('hint').onclick=hint;
+$('again').onclick=start;
+start();
+</script>
+</body>
+</html>
